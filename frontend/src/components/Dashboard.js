@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -11,11 +11,11 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/users/profile`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
@@ -23,8 +23,10 @@ const Dashboard = () => {
 
         const data = await response.json();
         setUserData(data);
+        console.log('Fetched user data:', data); // Debug log
       } catch (err) {
         setError(err.message);
+        console.error('Error fetching user data:', err); // Debug log
       } finally {
         setLoading(false);
       }
@@ -71,26 +73,31 @@ const Dashboard = () => {
                 <h2 className="text-2xl font-bold mb-8">Dashboard</h2>
                 
                 <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold mb-4">Welcome, {user?.email}</h3>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Welcome, {userData?.email || 'User'}
+                  </h3>
                   
-                  {userData && (
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Account Status:</span>
-                        <span className="text-green-600">Active</span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Last Login:</span>
-                        <span>{new Date().toLocaleDateString()}</span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Email Verified:</span>
-                        <span>{userData.emailVerified ? '✓' : '✗'}</span>
-                      </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Account Status:</span>
+                      <span className="text-green-600">Active</span>
                     </div>
-                  )}
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Email:</span>
+                      <span>{userData?.email || 'Not available'}</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Last Login:</span>
+                      <span>{new Date().toLocaleDateString()}</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Member Since:</span>
+                      <span>{userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'Not available'}</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-8">

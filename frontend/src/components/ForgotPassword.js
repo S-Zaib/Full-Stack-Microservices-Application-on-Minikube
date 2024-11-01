@@ -26,7 +26,7 @@ const ForgotPassword = () => {
         throw new Error(data.message || 'Failed to process request');
       }
 
-      setMessage('Password reset instructions have been sent to your email');
+      setMessage('Password has been resetted, signup again');
     } catch (err) {
       setError(err.message);
     }
