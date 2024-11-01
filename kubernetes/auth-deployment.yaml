@@ -6,22 +6,34 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: auth-service
+      app: auth
   template:
     metadata:
       labels:
-        app: auth-service
+        app: auth
     spec:
       containers:
-      - name: auth-service
+      - name: auth
         image: auth-service:latest
         ports:
         - containerPort: 5000
         env:
+        - name: MONGODB_URI
+          value: "mongodb://mongodb-service:27017/auth-db"
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:
-              name: auth-secrets
+              name: app-secrets
               key: jwt-secret
-        - name: MONGODB_URI
-          value: mongodb://mongodb:27017/auth-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: auth
+---
